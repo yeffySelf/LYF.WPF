@@ -96,53 +96,56 @@ namespace WPFCustomControls
 
         #region Internal Methods
 
-        internal void ChangeSelection(object data, CustomTreeViewItem container, bool selected)
+        internal void ChangeSelection(object data, CustomTreeViewItem container, bool? selected)
         {
             if (SelectMode == SelectionMode.Single)
             {
-                if (selected)
+                if (selected.Value)
                 {//单选时选中
                     _selectedContainers.ForEach(r =>
                     {
                         r.IsSelected = false;
                     });
                     _selectedContainers.Clear();
-                    container.IsSelected = selected;
+                    container.IsSelected = selected.Value;
                     _selectedContainers.Add(container);
                     SetValue(SelectedItemsPropertyKey, new List<object>() { data });
                 }
             }
-            else if (SelectMode == SelectionMode.Multiple)
+            else if (SelectMode != SelectionMode.Single)
             {
                 container.IsSelected = selected;
-                if (selected)
-                {//多选选中
-                    if (_selectedContainers.Contains(container) == false)
-                    {
-                        _selectedContainers.Add(container);
-                    }
-                    var selItems = SelectedItems;
-                    if (selItems.Contains(data) == false)
-                    {
-                        selItems.Add(data);
-                        SetValue(SelectedItemsPropertyKey, selItems );
-                    }
-                }
-                else
+                if (selected.HasValue)
                 {
-                    if (_selectedContainers.Contains(container))
-                    {
-                        _selectedContainers.Remove(container);
+                    if (selected.Value)
+                    {//多选选中
+                        if (_selectedContainers.Contains(container) == false)
+                        {
+                            _selectedContainers.Add(container);
+                        }
+                        var selItems = SelectedItems;
+                        if (selItems.Contains(data) == false)
+                        {
+                            selItems.Add(data);
+                            SetValue(SelectedItemsPropertyKey, selItems);
+                        }
                     }
-                    var selItems = SelectedItems;
-                    if (selItems.Contains(data))
+                    else
                     {
-                        selItems.Remove(data);
-                        SetValue(SelectedItemsPropertyKey, selItems);
+                        if (_selectedContainers.Contains(container))
+                        {
+                            _selectedContainers.Remove(container);
+                        }
+                        var selItems = SelectedItems;
+                        if (selItems.Contains(data))
+                        {
+                            selItems.Remove(data);
+                            SetValue(SelectedItemsPropertyKey, selItems);
+                        }
                     }
                 }
             }
-            RoutedEventArgs args = new RoutedEventArgs(SelectedItemsChangedEvent,this);
+            RoutedEventArgs args = new RoutedEventArgs(SelectedItemsChangedEvent, this);
             RaiseEvent(args);
         }
 

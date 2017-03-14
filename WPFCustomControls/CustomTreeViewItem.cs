@@ -22,7 +22,6 @@ namespace WPFCustomControls
             DefaultStyleKeyProperty.OverrideMetadata(typeof(CustomTreeViewItem), new FrameworkPropertyMetadata(typeof(CustomTreeViewItem)));
         }
 
-
         #region Properties
 
         #region IsExpandedProperty::是否展开
@@ -62,12 +61,12 @@ namespace WPFCustomControls
         public static readonly DependencyProperty IsSelectedProperty =
             DependencyProperty.Register(
                     "IsSelected",
-                    typeof(bool),
+                    typeof(bool?),
                     typeof(CustomTreeViewItem),
                     new FrameworkPropertyMetadata(false));
-        public bool IsSelected
+        public bool? IsSelected
         {
-            get { return (bool)GetValue(IsSelectedProperty); }
+            get { return (bool?)GetValue(IsSelectedProperty); }
             set { SetValue(IsSelectedProperty, value); }
         }
 
@@ -187,7 +186,7 @@ namespace WPFCustomControls
             return null;
         }
 
-        internal void SetIsSelect(CustomTreeViewItem treeViewItem,bool isSelected)
+        internal void SetIsSelect(CustomTreeViewItem treeViewItem,bool? isSelected)
         {
             if (treeViewItem == null) return;
             CustomTreeView tree = GetParentTreeView();
@@ -196,16 +195,18 @@ namespace WPFCustomControls
             {
                 object data = parent.ItemContainerGenerator.ItemFromContainer(treeViewItem);
                 tree.ChangeSelection(data, treeViewItem, isSelected);
-
-                if (IsSelected)
+                if (IsSelected.HasValue)
                 {
-                    RoutedEventArgs args = new RoutedEventArgs(SelectedEvent, treeViewItem);
-                    treeViewItem.RaiseEvent(args);
-                }
-                else
-                {
-                    RoutedEventArgs args = new RoutedEventArgs(UnselectedEvent, treeViewItem);
-                    treeViewItem.RaiseEvent(args);
+                    if (IsSelected.Value)
+                    {
+                        RoutedEventArgs args = new RoutedEventArgs(SelectedEvent, treeViewItem);
+                        treeViewItem.RaiseEvent(args);
+                    }
+                    else
+                    {
+                        RoutedEventArgs args = new RoutedEventArgs(UnselectedEvent, treeViewItem);
+                        treeViewItem.RaiseEvent(args);
+                    }
                 }
             }
             if (tree.SelectMode != SelectionMode.Single)
@@ -217,7 +218,34 @@ namespace WPFCustomControls
                     CustomTreeViewItem subItem = (CustomTreeViewItem)treeViewItem.ItemContainerGenerator.ContainerFromIndex(i);
                     SetIsSelect(subItem, isSelected);
                 }
+
+                CascadingSetParentIsSelected(parent as CustomTreeViewItem);
             }
+        }
+
+        private void CascadingSetParentIsSelected(CustomTreeViewItem parent)
+        {
+            if (parent == null) return;
+            int selectedCnt = 0;
+            int unselectedCnt = 0;
+            for(int i=0;i<parent.Items.Count;i++)
+            {
+                CustomTreeViewItem item = parent.ItemContainerGenerator.ContainerFromIndex(i) as CustomTreeViewItem;
+                if(item.IsSelected.HasValue)
+                {
+                    if (item.IsSelected.Value)
+                        selectedCnt += 1;
+                    else
+                        unselectedCnt += 1;
+                }
+            }
+            if (selectedCnt == parent.Items.Count)
+                parent.IsSelected = true;
+            else if(unselectedCnt == parent.Items.Count)
+                parent.IsSelected = false;
+            else
+                parent.IsSelected = null;
+            CascadingSetParentIsSelected(ItemsControl.ItemsControlFromItemContainer(parent) as CustomTreeViewItem);
         }
 
         #endregion
@@ -236,18 +264,11 @@ namespace WPFCustomControls
                     }
                     else
                     {
-                        if (!IsSelected)
+                        if (IsSelected == null || IsSelected.Value== false)
                         {
                             SetIsSelect(this,true);
                         }
                     }
-
-                    e.Handled = true;
-                }
-
-                if ((e.ClickCount % 2) == 0)
-                {
-                    IsExpanded = !IsExpanded;
                     e.Handled = true;
                 }
             }
