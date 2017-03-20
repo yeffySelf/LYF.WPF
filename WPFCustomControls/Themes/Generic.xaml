@@ -122,11 +122,13 @@
                         <ToggleButton
                             x:Name="Expander"
                             ClickMode="Press"
+                            VerticalAlignment="Center"
                             IsChecked="{Binding Path=IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
                             Style="{Binding ExpanderButtonStyle,RelativeSource={RelativeSource AncestorType=local:CustomTreeView}}" />
                         <CheckBox
                             Grid.Column="1"
                             IsChecked="{TemplateBinding IsSelected}"
+                            VerticalAlignment="Center"
                             IsThreeState="True"
                             IsEnabled="False"
                             Style="{Binding CheckgBoxStyle,RelativeSource={RelativeSource AncestorType=local:CustomTreeView}}"
@@ -138,7 +140,7 @@
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
-                            Tag="checkMark">
+                            VerticalAlignment="Center">
                             <ContentPresenter
                                 x:Name="PART_Header"
                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"

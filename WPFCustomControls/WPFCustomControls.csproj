@@ -47,11 +47,13 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TextBoxAdorner.cs" />
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
     <Compile Include="Converters.cs" />
+    <Compile Include="CustomTextBox.cs" />
     <Compile Include="CustomTreeView.cs">
       <SubType>Code</SubType>
     </Compile>

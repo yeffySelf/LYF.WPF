@@ -83,7 +83,7 @@ namespace WPFCustomControls
 
         #region 是否显示连接线
 
-        public static readonly DependencyProperty ShowTreeLineProperty = DependencyProperty.Register("ShowTreeLine", typeof(bool), typeof(CustomTreeView));
+        public static readonly DependencyProperty ShowTreeLineProperty = DependencyProperty.Register("ShowTreeLine", typeof(bool), typeof(CustomTreeView),new PropertyMetadata(true));
         public bool ShowTreeLine
         {
             get { return (bool)GetValue(ShowTreeLineProperty); }
