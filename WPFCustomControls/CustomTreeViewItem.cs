@@ -260,7 +260,7 @@ namespace WPFCustomControls
                     CustomTreeView treeview = GetParentTreeView();
                     if (treeview.SelectMode != SelectionMode.Single)
                     {
-                        SetIsSelect(this,!IsSelected);
+                        SetIsSelect(this, IsSelected == null ? true : !IsSelected);
                     }
                     else
                     {
