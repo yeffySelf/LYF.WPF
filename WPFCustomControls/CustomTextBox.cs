@@ -12,10 +12,20 @@ namespace WPFCustomControls
 {
     public class CustomTextBox:TextBox
     {
-        private CustomTextBoxAdorner _adorner = null;
+        private CustomTextBoxWaterMarkAdorner _adorner = null;
+        private CustomTextBoxBorderAdorner _borderAdorner = null;
+        private Brush normalBrush;
         public CustomTextBox()
         {
-            
+            normalBrush = this.BorderBrush;
+        }
+
+        public static readonly DependencyProperty MouseOverBorderBrushProperty = DependencyProperty.Register("MouseOverBorderBrush", typeof(Brush), typeof(CustomTextBox));
+
+        public Brush MouseOverBorderBrush
+        {
+            get { return (Brush)GetValue(MouseOverBorderBrushProperty); }
+            set { SetValue(MouseOverBorderBrushProperty, value); }
         }
 
         public static readonly DependencyProperty WaterMarkProperty = DependencyProperty.Register("WaterMark", typeof(string), typeof(CustomTextBox),new PropertyMetadata(""));
@@ -38,6 +48,18 @@ namespace WPFCustomControls
             SetWaterMark();
         }
 
+        protected override void OnMouseEnter(MouseEventArgs e)
+        {
+            base.OnMouseEnter(e);
+            SetBorder();
+        }
+
+        protected override void OnMouseLeave(MouseEventArgs e)
+        {
+            base.OnMouseLeave(e);
+            ClearBorder();
+        }
+
         #region internal method
 
         private void SetWaterMark()
@@ -48,7 +70,8 @@ namespace WPFCustomControls
                 //添加装饰器
                 if (_adorner == null)
                 {
-                    _adorner = new CustomTextBoxAdorner(this);
+                    _adorner = new CustomTextBoxWaterMarkAdorner(this);
+                    _adorner._textBlock.MouseEnter += _textBlock_MouseEnter;
                 }
                 
                 bool alreadyAdded = false;
@@ -57,7 +80,7 @@ namespace WPFCustomControls
                 {
                     foreach (var adorner in adorners)
                     {
-                        if (adorner is CustomTextBoxAdorner)
+                        if (adorner is CustomTextBoxWaterMarkAdorner)
                         {
                             alreadyAdded = true;
                         }
@@ -74,10 +97,52 @@ namespace WPFCustomControls
                 {
                     foreach (var adorner in adorners)
                     {
-                        if (adorner is CustomTextBoxAdorner)
+                        if (adorner is CustomTextBoxWaterMarkAdorner)
                         {
                             layer.Remove(adorner);
                         }
+                    }
+                }
+            }
+        }
+
+        private void _textBlock_MouseEnter(object sender, MouseEventArgs e)
+        {
+            SetBorder();
+        }
+
+        private void SetBorder()
+        {
+            AdornerLayer layer = AdornerLayer.GetAdornerLayer(this);
+            if (_borderAdorner == null)
+                _borderAdorner = new CustomTextBoxBorderAdorner(this);
+            bool alreadyAdded = false;
+            Adorner[] adorners = layer.GetAdorners(this);
+            if (adorners != null)
+            {
+                foreach (var adorner in adorners)
+                {
+                    if (adorner is CustomTextBoxBorderAdorner)
+                    {
+                        alreadyAdded = true;
+                    }
+                }
+            }
+            if (!alreadyAdded)
+                layer.Add(_borderAdorner);
+        }
+
+        private void ClearBorder()
+        {
+            AdornerLayer layer = AdornerLayer.GetAdornerLayer(this);
+            Adorner[] adorners = layer.GetAdorners(this);
+            if (adorners != null)
+            {
+                foreach (var adorner in adorners)
+                {
+                    if (adorner is CustomTextBoxBorderAdorner)
+                    {
+                        layer.Remove(adorner);
                     }
                 }
             }

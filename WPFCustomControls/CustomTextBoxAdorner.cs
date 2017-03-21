@@ -11,14 +11,14 @@ using System.Windows.Media;
 
 namespace WPFCustomControls
 {
-    public class CustomTextBoxAdorner : Adorner
+    public class CustomTextBoxWaterMarkAdorner : Adorner
     {
         private readonly VisualCollection _collection;
 
         private readonly CustomTextBox _textBox;
 
-        private readonly TextBlock _textBlock;
-        public CustomTextBoxAdorner(CustomTextBox adornedElement) : base(adornedElement)
+        internal readonly TextBlock _textBlock;
+        public CustomTextBoxWaterMarkAdorner(CustomTextBox adornedElement) : base(adornedElement)
         {
             _collection = new VisualCollection(this);
             _textBlock = new TextBlock()
@@ -60,6 +60,21 @@ namespace WPFCustomControls
         {
             base.OnMouseLeftButtonDown(e);
             _textBox.Focus();
+        }
+    }
+
+    public class CustomTextBoxBorderAdorner : Adorner
+    {
+        private readonly CustomTextBox _textBox;
+        public CustomTextBoxBorderAdorner(CustomTextBox adornedElement) : base(adornedElement)
+        {
+            _textBox = adornedElement;
+        }
+
+        protected override void OnRender(DrawingContext drawingContext)
+        {
+            base.OnRender(drawingContext);
+            drawingContext.DrawRectangle(null,new Pen(_textBox.MouseOverBorderBrush,1),new Rect(0,0,_textBox.DesiredSize.Width,_textBox.DesiredSize.Height));
         }
     }
 }
