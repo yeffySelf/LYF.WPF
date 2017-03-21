@@ -85,6 +85,7 @@
                 <Canvas>
                     <cc:CustomTextBox x:Name="textbox1" MouseOverBorderBrush="Green" VerticalContentAlignment="Center" WaterMark="身份证号" Width="300" Height="40" Canvas.Left="10" Canvas.Top="63" />
                     <cc:CustomTextBox x:Name="textbox2" MouseOverBorderBrush="Green" Text="142332" VerticalContentAlignment="Center" WaterMark="身份证号" Width="300" Height="40" Canvas.Left="10" Canvas.Top="10" />
+                    <cc:EditableTextBlock Text="hello world" Width="200" Padding="0,5" Canvas.Left="381" Canvas.Top="10" />
                 </Canvas>
             </TabItem>
 
